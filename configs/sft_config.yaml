@@ -1,0 +1,85 @@
+# SFT Training Configuration for H200 Benchmark
+# This configuration is used for Supervised Fine-Tuning of LLMs
+
+training:
+  # Model configuration
+  model_name: "meta-llama/Llama-2-7b-hf"  # Default model, can be overridden
+  model_precision: "bf16"  # bfloat16 for H200
+  use_flash_attention: true  # Flash Attention 2
+  
+  # Training parameters
+  num_epochs: 1
+  max_steps: 1000  # Limited for benchmarking
+  learning_rate: 2e-4
+  warmup_steps: 100
+  weight_decay: 0.1
+  gradient_clip: 1.0
+  
+  # Batch configuration
+  per_device_train_batch_size: 8
+  gradient_accumulation_steps: 16
+  eval_batch_size: 16
+  
+  # Optimization
+  optimizer: "adamw"
+  adam_beta1: 0.9
+  adam_beta2: 0.95
+  adam_epsilon: 1e-8
+  
+  # LoRA configuration (for memory efficiency)
+  use_lora: true
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.1
+  lora_target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+  
+  # Checkpointing
+  save_steps: 500
+  eval_steps: 500
+  logging_steps: 10
+  save_total_limit: 3
+  load_best_model_at_end: true
+  
+  # Memory optimization
+  gradient_checkpointing: true
+  tf32: true  # Enable TF32 for H200
+  
+  # Data configuration
+  max_seq_length: 2048
+  pad_to_max_length: true
+  
+  # Distributed training
+  ddp_timeout: 7200
+  ddp_find_unused_parameters: false
+  dataloader_num_workers: 4
+  
+# Dataset configuration
+dataset:
+  name: "tatsu-lab/alpaca"
+  split: "train"
+  text_column: "text"
+  max_samples: null  # Use all samples
+  preprocessing_num_workers: 8
+  
+# Hardware configuration
+hardware:
+  gpus_per_node: 8
+  num_nodes: null  # Set at runtime
+  enable_gpu_direct_rdma: true
+  
+# Monitoring configuration
+monitoring:
+  log_gpu_metrics: true
+  log_network_metrics: true
+  metrics_interval: 5  # seconds
+  profile_training: false
+  
+# Output configuration
+output:
+  save_model: false  # Don't save model for benchmarking
+  save_metrics: true
+  generate_report: true

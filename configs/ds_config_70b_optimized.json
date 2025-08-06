@@ -1,0 +1,88 @@
+{
+  "train_batch_size": 256,
+  "train_micro_batch_size_per_gpu": 1,
+  "gradient_accumulation_steps": 32,
+  "optimizer": {
+    "type": "AdamW",
+    "params": {
+      "lr": 1e-4,
+      "betas": [0.9, 0.95],
+      "eps": 1e-8,
+      "weight_decay": 0.1
+    }
+  },
+  "scheduler": {
+    "type": "WarmupDecayLR",
+    "params": {
+      "warmup_min_lr": 0,
+      "warmup_max_lr": 1e-4,
+      "warmup_num_steps": 200,
+      "total_num_steps": 700
+    }
+  },
+  "zero_optimization": {
+    "stage": 3,
+    "offload_optimizer": {
+      "device": "cpu",
+      "pin_memory": true,
+      "buffer_count": 4,
+      "fast_init": false
+    },
+    "offload_param": {
+      "device": "cpu",
+      "pin_memory": true,
+      "buffer_count": 5,
+      "buffer_size": 1e8,
+      "max_in_cpu": 1e9
+    },
+    "overlap_comm": true,
+    "contiguous_gradients": true,
+    "sub_group_size": 1e8,
+    "reduce_bucket_size": 5e7,
+    "stage3_prefetch_bucket_size": 5e7,
+    "stage3_param_persistence_threshold": 1e5,
+    "stage3_max_live_parameters": 1e8,
+    "stage3_max_reuse_distance": 1e8,
+    "stage3_gather_16bit_weights_on_model_save": true,
+    "round_robin_gradients": true,
+    "zero_hpz_partition_size": 8,
+    "zero_quantized_weights": false,
+    "zero_quantized_gradients": false,
+    "mics_shard_size": 2
+  },
+  "gradient_clipping": 1.0,
+  "steps_per_print": 10,
+  "bf16": {
+    "enabled": true
+  },
+  "fp16": {
+    "enabled": false
+  },
+  "wall_clock_breakdown": true,
+  "zero_allow_untested_optimizer": false,
+  "activation_checkpointing": {
+    "partition_activations": true,
+    "cpu_checkpointing": true,
+    "contiguous_memory_optimization": true,
+    "number_checkpoints": 4,
+    "synchronize_checkpoint_boundary": false,
+    "profile": false
+  },
+  "flops_profiler": {
+    "enabled": false
+  },
+  "communication_data_type": "bf16",
+  "prescale_gradients": false,
+  "gradient_accumulation_steps": 32,
+  "sparse_gradients": false,
+  "zero_force_ds_cpu_optimizer": true,
+  "memory_efficient_linear": true,
+  "tensor_parallel": {
+    "enabled": false,
+    "tp_size": 1
+  },
+  "pipeline_parallel": {
+    "enabled": false,
+    "pp_size": 1
+  }
+}

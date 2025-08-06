@@ -1,0 +1,77 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Conda
+conda-meta/
+*.conda
+*.tar.bz2
+
+# Results and logs
+results/
+*.log
+*.csv
+*.json
+!configs/*.json
+!docs/*.json
+
+# Datasets
+datasets/sft_*/
+*.arrow
+*.bin
+
+# Model checkpoints
+checkpoint*/
+*.pt
+*.pth
+*.safetensors
+output/
+outputs/
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+.cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# NCCL/MPI
+hostfile
+hostfile.*
+nccl-tests/
+
+# Metrics
+*.png
+*.pdf
+*.svg
+
+# Backups
+*.bak
+*.backup
+*_old*
+
+# Authentication
+.env
+.env.local
+*.token
+credentials.json
+secrets/

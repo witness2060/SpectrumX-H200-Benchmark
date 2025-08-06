@@ -1,0 +1,20 @@
+# PDSH Configuration for Real H200 Cluster
+# Master node: 10.2.201.1
+
+# Node list configuration - 実際のIPアドレスを使用
+export PDSH_RCMD_TYPE=ssh
+export PDSH_SSH_ARGS="-o StrictHostKeyChecking=no -o ConnectTimeout=10"
+
+# 実際のノードリスト（fukushimadc-02-hgx-0008は存在しないので除外）
+export NODES="10.2.201.2,10.2.201.3,10.2.201.4,10.2.201.5,10.2.201.6,10.2.201.7,10.2.201.9"
+export NODE_NAMES="fukushimadc-02-hgx-0002,fukushimadc-02-hgx-0003,fukushimadc-02-hgx-0004,fukushimadc-02-hgx-0005,fukushimadc-02-hgx-0006,fukushimadc-02-hgx-0007,fukushimadc-02-hgx-0009"
+export ALL_NODES="10.2.201.1,10.2.201.2,10.2.201.3,10.2.201.4,10.2.201.5,10.2.201.6,10.2.201.7,10.2.201.9"
+export ALL_NODE_NAMES="fukushimadc-02-hgx-0001,fukushimadc-02-hgx-0002,fukushimadc-02-hgx-0003,fukushimadc-02-hgx-0004,fukushimadc-02-hgx-0005,fukushimadc-02-hgx-0006,fukushimadc-02-hgx-0007,fukushimadc-02-hgx-0009"
+
+# PDSH options
+export PDSH_OPTIONS="-f 64"
+
+# Helper function
+pdsh_all() {
+    pdsh -w "$NODES" "$@"
+}

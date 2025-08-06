@@ -1,0 +1,24 @@
+# PDSH Configuration for H200 Cluster
+# This file is sourced by bash scripts that use pdsh
+
+# Node list configuration
+export PDSH_RCMD_TYPE=ssh
+export PDSH_SSH_ARGS="-i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=10"
+
+# Default node list (adjust based on your actual cluster)
+# Note: node009 is included as per the verify_cluster.sh script
+export NODES="node001,node002,node003,node004,node005,node006,node007,node008"
+
+# Alternative node naming (if needed)
+# export NODES="node[001-008]"
+
+# PDSH options
+export PDSH_OPTIONS="-f 64"  # Fanout: number of parallel connections
+
+# Helper function for PDSH commands
+pdsh_all() {
+    pdsh -w "$NODES" "$@"
+}
+
+# Export functions for use in scripts
+export -f pdsh_all
