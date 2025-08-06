@@ -87,14 +87,34 @@ CPU_PID=$!
 ) &
 MEM_PID=$!
 
+# InfiniBand統計の収集（利用可能な場合）
+(
+    echo "timestamp,node,port,port_xmit_data,port_rcv_data,port_xmit_packets,port_rcv_packets" > "$OUTPUT_DIR/ib_metrics.csv"
+    while [ $(date +%s) -lt $END_TIME ]; do
+        timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+        # perfqueryコマンドが存在するかチェック
+        pdsh -w "$NODES" "which perfquery >/dev/null 2>&1 && perfquery -x 2>/dev/null | grep -E 'PortXmitData|PortRcvData|PortXmitPkts|PortRcvPkts' | awk '{print \$NF}' | paste -sd ',' || echo 'N/A,N/A,N/A,N/A'" 2>/dev/null | \
+        while read line; do
+            node=$(echo $line | cut -d: -f1)
+            data=$(echo $line | cut -d: -f2)
+            if [ "$data" != "N/A,N/A,N/A,N/A" ]; then
+                echo "$timestamp,$node,1,$data" >> "$OUTPUT_DIR/ib_metrics.csv"
+            fi
+        done
+        sleep $INTERVAL
+    done
+) &
+IB_PID=$!
+
 echo "Metrics collection started with PIDs:"
 echo "  GPU: $GPU_PID"
 echo "  Network: $NET_PID"
 echo "  CPU: $CPU_PID"
 echo "  Memory: $MEM_PID"
+echo "  InfiniBand: $IB_PID"
 
 # 待機またはCtrl+Cで終了
-trap "kill $GPU_PID $NET_PID $CPU_PID $MEM_PID 2>/dev/null; echo 'Metrics collection stopped'" EXIT
+trap "kill $GPU_PID $NET_PID $CPU_PID $MEM_PID $IB_PID 2>/dev/null; echo 'Metrics collection stopped'" EXIT
 
 if [ "$DURATION" -gt 0 ]; then
     echo "Collecting metrics for $DURATION seconds..."

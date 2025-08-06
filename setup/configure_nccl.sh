@@ -51,4 +51,43 @@ pdsh -w "$PDSH_NODES" "sudo sysctl -w net.core.wmem_max=134217728" 2>/dev/null
 pdsh -w "$PDSH_NODES" "sudo sysctl -w net.ipv4.tcp_rmem='4096 87380 134217728'" 2>/dev/null
 pdsh -w "$PDSH_NODES" "sudo sysctl -w net.ipv4.tcp_wmem='4096 65536 134217728'" 2>/dev/null
 
+# RoCEv2 QoS設定
+echo "Configuring RoCEv2 QoS settings..."
+pdsh -w "$PDSH_NODES" << 'REMOTE_EOF'
+# RoCEv2 QoS設定（インターフェースが存在する場合のみ実行）
+if [ -d "/sys/class/net/mlx5_0" ]; then
+    sudo mlnx_qos -i mlx5_0 --trust dscp 2>/dev/null || echo "mlnx_qos not available for mlx5_0"
+    sudo cma_roce_mode -d mlx5_0 -m 2 2>/dev/null || echo "cma_roce_mode not available for mlx5_0"
+fi
+
+if [ -d "/sys/class/net/mlx5_1" ]; then
+    sudo mlnx_qos -i mlx5_1 --trust dscp 2>/dev/null || echo "mlnx_qos not available for mlx5_1"
+    sudo cma_roce_mode -d mlx5_1 -m 2 2>/dev/null || echo "cma_roce_mode not available for mlx5_1"
+fi
+
+# Bonding設定確認
+if [ -f "/proc/net/bonding/bond0" ]; then
+    echo "=== Bond0 Configuration ==="
+    cat /proc/net/bonding/bond0 | grep -E "Bonding Mode|MII Status|Slave Interface" | head -10
+fi
+REMOTE_EOF
+
+# NCCL設定ファイルの作成（オプション）
+echo "Creating NCCL configuration file..."
+pdsh -w "$PDSH_NODES" << 'REMOTE_EOF'
+sudo tee /etc/nccl.conf << 'NCCL_EOF'
+# SpectrumX 400GbE x2 設定
+NCCL_IB_HCA=mlx5_0,mlx5_1
+NCCL_SOCKET_IFNAME=bond0
+NCCL_IB_GID_INDEX=3
+NCCL_IB_TC=106
+NCCL_IB_QPS_PER_CONNECTION=4
+NCCL_BUFFSIZE=8388608
+NCCL_ALGO=Ring,Tree
+NCCL_COLLNET_ENABLE=0
+NCCL_DEBUG=WARN
+NCCL_TOPO_FILE=/etc/nccl-topo.xml
+NCCL_EOF
+REMOTE_EOF
+
 echo "NCCL configuration completed!"

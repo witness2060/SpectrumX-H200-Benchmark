@@ -9,6 +9,7 @@ Automated SFT (Supervised Fine-Tuning) benchmark suite for NVIDIA H200 GPU clust
 - **完全自動化**: 環境セットアップからベンチマーク実行、レポート生成まで一括実行
 - **包括的なテスト**: NCCL通信、PyTorch分散処理、SFT訓練の各種ベンチマーク
 - **プロダクション対応**: エラーハンドリング、ログ記録、メトリクス収集を完備
+- **初心者対応**: マルチノード分散学習が初めての方向けのガイド付き
 
 ## 📋 前提条件
 
@@ -29,6 +30,11 @@ Automated SFT (Supervised Fine-Tuning) benchmark suite for NVIDIA H200 GPU clust
 - 全てのスクリプトは自動的にポート44222を使用するよう設定済み
 - 手動でSSH接続する場合: `ssh -p 44222 node001`
 - PDSHは自動的に正しいポートを使用します
+
+## 🎯 初めての方へ
+
+**マルチノード分散学習が初めての方は、[初心者ガイド](docs/BEGINNERS_GUIDE.md)をご覧ください。**
+ステップバイステップで基本概念から実行方法まで解説しています。
 
 ## 🏃 クイックスタート
 
@@ -154,6 +160,18 @@ export LEARNING_RATE=1e-4
 | `NCCL_DEBUG` | NCCLデバッグレベル | WARN |
 
 詳細な設定は`.env.example`を参照してください。
+
+## 📚 ドキュメント
+
+### 必読ドキュメント
+- **[初心者ガイド](docs/BEGINNERS_GUIDE.md)**: マルチノード分散学習が初めての方向け
+- **[CLAUDE.md](CLAUDE.md)**: プロジェクトの技術仕様と設計思想
+- **[PROJECT_STATUS.md](PROJECT_STATUS.md)**: 現在の実装状況と既知の問題
+
+### その他のドキュメント
+- [SFT訓練ガイド](docs/SFT_TRAINING_GUIDE.md): SFT訓練の詳細
+- [実行ガイド](docs/SPECTRUMX_H200_EXECUTION_GUIDE.md): 実行方法の詳細
+- [環境変数リファレンス](docs/SPECTRUMX_ENV_VARIABLES.md): 設定可能な環境変数一覧
 
 ## 📁 プロジェクト構造
 
@@ -334,7 +352,14 @@ ibstat  # InfiniBandの場合
 
 ## 📋 更新履歴
 
-### 最新の改善点 (2024-01)
+### 最新の改善点 (2025-01)
+- **初心者ガイド追加**: マルチノード分散学習の基礎から学べるガイドを追加
+- **RoCEv2 QoS設定**: configure_nccl.shにネットワーク最適化を追加
+- **InfiniBandメトリクス**: collect_metrics.shに詳細な通信性能測定を追加
+- **ドキュメント整理**: 重複文書をアーカイブし、PROJECT_STATUS.mdで一元管理
+- **CLAUDE.md作成**: プロジェクト仕様書を整備
+
+### 以前の改善点 (2024-01)
 - **動的ノード検出**: SSH接続テストによる自動ノード検出機能
 - **DeepSpeed統合改善**: コマンドライン引数の修正
 - **GPU性能測定**: gpu_benchmark.pyの追加
