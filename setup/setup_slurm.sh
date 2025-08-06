@@ -25,7 +25,7 @@ echo "Creating Slurm configuration..."
 cat > /etc/slurm/slurm.conf << 'EOF'
 # Slurm configuration for H200 cluster
 ClusterName=h200-cluster
-SlurmctldHost=master
+SlurmctldHost=fukushimadc-02-hgx-0001
 
 # スケジューリング設定
 SchedulerType=sched/backfill
@@ -55,31 +55,31 @@ GresTypes=gpu
 AccountingStorageTRES=gres/gpu
 
 # ノード設定（8ノード × 8GPU）
-NodeName=node001 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
-NodeName=node002 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
-NodeName=node003 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
-NodeName=node004 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
-NodeName=node005 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
-NodeName=node006 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
-NodeName=node007 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
-NodeName=node008 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
+NodeName=fukushimadc-02-hgx-0001 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
+NodeName=fukushimadc-02-hgx-0002 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
+NodeName=fukushimadc-02-hgx-0003 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
+NodeName=fukushimadc-02-hgx-0004 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
+NodeName=fukushimadc-02-hgx-0005 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
+NodeName=fukushimadc-02-hgx-0006 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
+NodeName=fukushimadc-02-hgx-0007 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
+NodeName=fukushimadc-02-hgx-0009 Gres=gpu:8 CPUs=128 RealMemory=512000 State=UNKNOWN
 
 # パーティション設定
-PartitionName=h200-bench Nodes=node[001-008] Default=YES MaxTime=INFINITE State=UP
+PartitionName=h200-bench Nodes=fukushimadc-02-hgx-000[1-7],fukushimadc-02-hgx-0009 Default=YES MaxTime=INFINITE State=UP
 EOF
 
 # GPU設定ファイルの作成
 echo "Creating GPU configuration..."
 cat > /etc/slurm/gres.conf << 'EOF'
 # GPU configuration for H200
-NodeName=node001 Name=gpu Type=h200 File=/dev/nvidia[0-7]
-NodeName=node002 Name=gpu Type=h200 File=/dev/nvidia[0-7]
-NodeName=node003 Name=gpu Type=h200 File=/dev/nvidia[0-7]
-NodeName=node004 Name=gpu Type=h200 File=/dev/nvidia[0-7]
-NodeName=node005 Name=gpu Type=h200 File=/dev/nvidia[0-7]
-NodeName=node006 Name=gpu Type=h200 File=/dev/nvidia[0-7]
-NodeName=node007 Name=gpu Type=h200 File=/dev/nvidia[0-7]
-NodeName=node008 Name=gpu Type=h200 File=/dev/nvidia[0-7]
+NodeName=fukushimadc-02-hgx-0001 Name=gpu Type=h200 File=/dev/nvidia[0-7]
+NodeName=fukushimadc-02-hgx-0002 Name=gpu Type=h200 File=/dev/nvidia[0-7]
+NodeName=fukushimadc-02-hgx-0003 Name=gpu Type=h200 File=/dev/nvidia[0-7]
+NodeName=fukushimadc-02-hgx-0004 Name=gpu Type=h200 File=/dev/nvidia[0-7]
+NodeName=fukushimadc-02-hgx-0005 Name=gpu Type=h200 File=/dev/nvidia[0-7]
+NodeName=fukushimadc-02-hgx-0006 Name=gpu Type=h200 File=/dev/nvidia[0-7]
+NodeName=fukushimadc-02-hgx-0007 Name=gpu Type=h200 File=/dev/nvidia[0-7]
+NodeName=fukushimadc-02-hgx-0009 Name=gpu Type=h200 File=/dev/nvidia[0-7]
 EOF
 
 # cgroupの設定

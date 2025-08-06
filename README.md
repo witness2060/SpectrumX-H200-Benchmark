@@ -24,6 +24,12 @@ Automated SFT (Supervised Fine-Tuning) benchmark suite for NVIDIA H200 GPU clust
 - SSH鍵認証設定済み（パスワードなしでノード間通信可能）
 - PDSHインストール済み
 
+### ⚠️ 重要: カスタムSSH設定
+**このクラスタはSSHポート44222を使用します（標準の22番ポートではありません）**
+- 全てのスクリプトは自動的にポート44222を使用するよう設定済み
+- 手動でSSH接続する場合: `ssh -p 44222 node001`
+- PDSHは自動的に正しいポートを使用します
+
 ## 🏃 クイックスタート
 
 ### 1. リポジトリのクローン
@@ -281,6 +287,12 @@ ibstat  # InfiniBandの場合
 
 レポート生成後：
 - `docs/benchmark_report.md` - 統合レポート（Markdown形式）
+
+## 🖥️ ノード構成
+
+クラスタのノード構成については、`configs/node_mapping.json`を参照してください：
+- 汎用名（`node001`〜`node008`）と実際のホスト名の対応表
+- `node008`は`fukushimadc-02-hgx-0009`にマッピングされています（`0008`は利用不可）
 
 ## 🎯 パフォーマンス目標
 

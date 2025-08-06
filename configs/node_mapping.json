@@ -1,0 +1,26 @@
+{
+  "node_mapping": {
+    "node001": "fukushimadc-02-hgx-0001",
+    "node002": "fukushimadc-02-hgx-0002",
+    "node003": "fukushimadc-02-hgx-0003",
+    "node004": "fukushimadc-02-hgx-0004",
+    "node005": "fukushimadc-02-hgx-0005",
+    "node006": "fukushimadc-02-hgx-0006",
+    "node007": "fukushimadc-02-hgx-0007",
+    "node008": "fukushimadc-02-hgx-0009"
+  },
+  "notes": {
+    "missing_node": "fukushimadc-02-hgx-0008 is not available",
+    "ssh_port": 44222,
+    "network_interface": "bond0",
+    "gpus_per_node": 8
+  },
+  "cluster_info": {
+    "name": "SpectrumX H200 Cluster",
+    "total_nodes": 8,
+    "total_gpus": 64,
+    "gpu_model": "NVIDIA H200 SXM",
+    "interconnect": "SpectrumX 400GbE x2 (RoCEv2)",
+    "node_interconnect": "NVLink 5.0 / NVSwitch"
+  }
+}

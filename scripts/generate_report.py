@@ -104,7 +104,7 @@ def generate_report(results_dir, output_file):
 
 ### ハードウェア構成
 - **GPU**: NVIDIA H200 SXM (HBM3e 141GB, 4.8TB/s)
-- **ノード数**: 8ノード（node001-007, node009）
+- **ノード数**: 8ノード（fukushimadc-02-hgx-0001~0007, 0009）
 - **GPU総数**: 64基（各ノード8GPU）
 - **総メモリ**: 8.96TB HBM3e
 - **ノード間接続**: SpectrumX 400GbE × 2ポート (RoCEv2)

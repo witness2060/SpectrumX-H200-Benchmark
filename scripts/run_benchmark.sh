@@ -1,11 +1,52 @@
 #!/bin/bash
 set -euo pipefail
 
+# プロジェクトディレクトリ
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/." && pwd)"
+
+# エラーハンドラー
+error_exit() {
+    echo "[エラー] $1" >&2
+    exit 1
+}
+
+# 前提条件チェック
+check_prerequisites() {
+    # CUDAチェック
+    if ! command -v nvidia-smi &> /dev/null; then
+        error_exit "nvidia-smiが見つかりません。CUDAがインストールされているか確認してください"
+    fi
+    
+    # Pythonチェック
+    if ! command -v python3 &> /dev/null; then
+        error_exit "python3が見つかりません"
+    fi
+    
+    # PDSHチェック
+    if ! command -v pdsh &> /dev/null; then
+        error_exit "pdshが見つかりません。./setup/install_master_prerequisites.shを実行してください"
+    fi
+}
+
+# 前提条件チェックの実行
+check_prerequisites
+
 # 環境変数の読み込み
-source "$(dirname "$0")/../setup/load_env.sh"
+source "$PROJECT_DIR/../setup/load_env.sh"
 
 # クラスタ設定の読み込み
-source "$(dirname "$0")/../setup/cluster_config.sh"
+if [ -f "$PROJECT_DIR/../setup/cluster_config.sh" ]; then
+    source "$PROJECT_DIR/../setup/cluster_config.sh"
+else
+    error_exit "cluster_config.shが見つかりません"
+fi
+
+# PDSH設定の読み込み
+if [ -f ~/.pdshrc ]; then
+    source ~/.pdshrc
+else
+    echo "[警告] ~/.pdshrcが見つかりません。./setup/setup_pdsh_all_nodes.shを実行してください"
+fi
 
 # デフォルト値（環境変数から取得、引数で上書き可能）
 MODEL_NAME="${1:-$DEFAULT_MODEL}"
@@ -15,12 +56,29 @@ OUTPUT_DIR="results/$(date +%Y%m%d_%H%M%S)_${TEST_TYPE}_${NUM_NODES}node"
 
 # ノードの自動検出
 echo "=== ノード検出とクラスタ準備 ==="
-detect_available_nodes || exit 1
+if ! detect_available_nodes; then
+    error_exit "ノード検出に失敗しました。ネットワーク接続を確認してください"
+fi
+
+# ノード数の検証
+if [ $NODE_COUNT -eq 0 ]; then
+    error_exit "利用可能なノードがありません"
+fi
 
 # 指定されたノード数の検証
 if [ $NUM_NODES -gt $NODE_COUNT ]; then
-    echo "エラー: 要求されたノード数 ($NUM_NODES) が利用可能なノード数 ($NODE_COUNT) を超えています"
-    exit 1
+    error_exit "要求されたノード数 ($NUM_NODES) が利用可能なノード数 ($NODE_COUNT) を超えています"
+fi
+
+# モデルの検証
+if [ -z "$MODEL_NAME" ]; then
+    error_exit "モデル名が指定されていません"
+fi
+
+# HFトークンの確認（Llamaモデルの場合）
+if [[ "$MODEL_NAME" == *"llama"* ]] && [ -z "$HF_TOKEN" ]; then
+    echo "[警告] HF_TOKENが設定されていません。Llamaモデルにアクセスできない可能性があります"
+    echo ".envファイルにHF_TOKENを設定するか、export HF_TOKEN=xxxを実行してください"
 fi
 
 # 使用するノードの選択

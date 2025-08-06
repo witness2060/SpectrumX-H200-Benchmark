@@ -10,25 +10,20 @@ echo " Parallel GPU Performance Test"
 echo " Nodes: $NUM_NODES | Duration: ${TEST_DURATION}s"
 echo "==========================================="
 
-# PDSHのセットアップ
-source /root/.pdshrc
+# クラスタ設定の読み込み
+source /root/test/spectrumx-h200-benchmark/setup/cluster_config.sh
+
+# 利用可能なノードを検出
+detect_available_nodes
+
+# 要求されたノード数の検証
+if [ $NODE_COUNT -lt $NUM_NODES ]; then
+    echo "Error: Only $NODE_COUNT nodes available, but $NUM_NODES requested"
+    exit 1
+fi
 
 # ノードリストの生成
-case $NUM_NODES in
-    2)
-        NODES="node001,node002"
-        ;;
-    4)
-        NODES="node001,node002,node003,node004"
-        ;;
-    8)
-        NODES="node001,node002,node003,node004,node005,node006,node007,node009"
-        ;;
-    *)
-        echo "Invalid number of nodes. Use 2, 4, or 8."
-        exit 1
-        ;;
-esac
+NODES=$(echo "${AVAILABLE_NODES[@]:0:$NUM_NODES}" | tr ' ' ',')
 
 OUTPUT_DIR="results/parallel_test_${NUM_NODES}node_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$OUTPUT_DIR"
